@@ -187,6 +187,9 @@ files:
     if __name__ == '__main__':
         TicTacToeTests().run_tests()
   learner_created: false
-feedback_link: https://hyperskill.org/projects/82/stages/453/implement#comment
-status: Unchecked
+feedback_link: https://hyperskill.org/learn/step/7440#comment
+status: Solved
+feedback:
+  message: Congratulations!
+  time: "Sun, 12 Feb 2023 20:07:58 UTC"
 record: -1

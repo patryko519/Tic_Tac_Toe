@@ -1,31 +1,32 @@
-board = [[], [], []]
-who_start = 'X'
+import random
+
+board = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
 
 
-def make_board():
-    print('Enter the cells: ')
-    initial_state = input()
-    global board
-    global who_start
-    k = 0
-    for i in range(3):
-        for j in range(3):
-            board[i].append(initial_state[k])
-            k += 1
+def check_if_end(sign):
+    if check_if_win(sign):
+        return [True, sign + ' wins']
+    elif check_if_draw():
+        return [True, 'draw']
+    return [False]
+
+
+def game():
     print_board()
-    if initial_state.count('X') > initial_state.count('O'):
-        who_start = 'O'
+    while True:
+        player_move()
+        print_board()
+        if (check_if_end('X'))[0]:
+            print(check_if_end('X')[1])
+            break
+        computer_move()
+        print_board()
+        if (check_if_end('O'))[0]:
+            print(check_if_end('O')[1])
+            break
 
 
-def put_move_on_board(move):
-    global board
-    global who_start
-    row = int(move[0])
-    column = int(move[2])
-    board[row - 1][column - 1] = who_start
-
-
-def make_a_move():
+def player_move():
     print('Enter the coordinates: ')
     while True:
         move = input()
@@ -35,11 +36,31 @@ def make_a_move():
             print('You should enter numbers!')
         elif not is_move_on_board(move):
             print('Coordinates should be from 1 to 3!')
-        elif not check_if_occupied(move):
+        elif not move_is_available(int(move[0]) - 1, int(move[2]) - 1):
             print('This cell is occupied! Choose another one!')
         else:
-            put_move_on_board(move)
+            put_move_on_board(int(move[0]) - 1, int(move[2]) - 1, 'X')
             return False
+
+
+def move_is_available(row, column):
+    global board
+    return board[row][column] == ' '
+
+
+def computer_move():
+    row_coordinate = random.randint(0, 2)
+    column_coordinate = random.randint(0, 2)
+    while not move_is_available(row_coordinate, column_coordinate):
+        row_coordinate = random.randint(0, 2)
+        column_coordinate = random.randint(0, 2)
+    print('Making move level "easy"')
+    put_move_on_board(row_coordinate, column_coordinate, 'O')
+
+
+def put_move_on_board(row, column, sign):
+    global board
+    board[row][column] = sign
 
 
 def is_move_number(move):
@@ -49,13 +70,14 @@ def is_move_number(move):
 
 
 def is_move_on_board(move):
-    return int(move.split(" ")[0]) in [1, 2, 3] and int(move.split(" ")[1]) in [1, 2, 3]
+    return (int(move.split(" ")[0]) in [1, 2, 3] and
+            int(move.split(" ")[1]) in [1, 2, 3])
 
 
 def check_if_occupied(move):
     row = int(move[0])
     column = int(move[2])
-    return board[row - 1][column - 1] == '_'
+    return board[row - 1][column - 1] == ' '
 
 
 def print_board():
@@ -70,52 +92,40 @@ def print_board():
 
 def check_if_draw():
     global board
-    return sum(sign.count('_') for sign in board) == 0
+    return sum(sign.count(' ') for sign in board) == 0
 
 
-def vertical():
+def vertical(sign):
     global board
     for i in range(3):
-        if [item[i] for item in board].count(who_start) == 3:
+        if [item[i] for item in board].count(sign) == 3:
             return True
     return False
 
 
-def horizontal():
+def horizontal(sign):
     global board
     for i in range(3):
-        if board[i].count(who_start) == 3:
+        if board[i].count(sign) == 3:
             return True
     return False
 
 
-def diagonal():
+def diagonal(sign):
     global board
-    if (board[0][0] == who_start and
-            board[1][1] == who_start and
-            board[2][2] == who_start):
+    if (board[0][0] == sign and
+            board[1][1] == sign and
+            board[2][2] == sign):
         return True
-    elif (board[0][2] == who_start and
-            board[1][1] == who_start and
-            board[2][0] == who_start):
+    elif (board[0][2] == sign and
+            board[1][1] == sign and
+            board[2][0] == sign):
         return True
     return False
 
 
-def check_if_win():
-    return vertical() or horizontal() or diagonal()
+def check_if_win(sign):
+    return vertical(sign) or horizontal(sign) or diagonal(sign)
 
 
-def end_of_game():
-    if check_if_win():
-        print(who_start + ' wins')
-    elif check_if_draw():
-        print('Draw')
-    else:
-        print('Game not finished')
-
-
-make_board()
-make_a_move()
-print_board()
-end_of_game()
+game()
